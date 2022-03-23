@@ -54,7 +54,7 @@ async function createTags(tagList) {
     const { rows } = await client.query(
       `
       SELECT * FROM tags
-      WHERE name
+      WHERE tags.name
       IN (${selectValues});
       `,
       tagList
@@ -308,13 +308,10 @@ async function getPostsByUser(userId) {
       `
         SELECT id
         FROM posts
-        WHERE "authorId" = $1`,
-      [userId]
+        WHERE "authorId" = ${userId}`
     );
 
-    const posts = await Promise.all(
-      postIds.map((post) => getPostById(post.id))
-    );
+    const posts = await Promise.all(postIds.map(({ id }) => getPostById(id)));
 
     return posts;
   } catch (error) {
@@ -343,8 +340,6 @@ async function getPostsByTagName(tagName) {
 
 async function getUserById(userId) {
   try {
-    console.log("hit get user by id");
-
     const {
       rows: [user],
     } = await client.query(
@@ -354,8 +349,6 @@ async function getUserById(userId) {
       [userId]
     );
 
-    console.log({ user });
-
     if (rows.length === 0) {
       return null;
     }
@@ -363,7 +356,7 @@ async function getUserById(userId) {
     delete user.password;
 
     const posts = await getPostsByUser(user.id);
-    console.log({ posts });
+
     user.posts = posts;
 
     return user;
