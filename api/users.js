@@ -39,7 +39,6 @@ usersRouter.post("/login", async (req, res, next) => {
 
   try {
     const user = await getUserByUsername(username);
-    console.log(user);
 
     if (user && user.password === password) {
       const token = jwt.sign({ id: user.id, username }, process.env.JWT_SECRET);
@@ -64,7 +63,7 @@ usersRouter.post("/register", async (req, res, next) => {
 
     if (_user) {
       next({
-        name: "UserEixtsError",
+        name: "UserEixstsError",
         message: "A user by that username already exists",
       });
     }
@@ -80,7 +79,7 @@ usersRouter.post("/register", async (req, res, next) => {
       expiresIn: "1w",
     });
 
-    res.send({ messag: "thank you for signing up", token });
+    res.send({ message: "thank you for signing up", token });
   } catch ({ name, message }) {
     next({ name, message });
   }
